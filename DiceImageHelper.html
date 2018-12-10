@@ -1,0 +1,327 @@
+<html>
+    <head>
+        <style>
+            table {
+               border-collapse: collapse;
+               /* width:100%; */
+            }
+            table, th, td {
+                border: 1px solid black;
+            }
+            #contrastLevel, #brightnessLevel{
+                display:block;background-color:black;height:10px;width:10%;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>Dice mosaic generator (prepare your image to recreate it using only dice)</h3>
+
+        <table>
+            <thead style=background-color:lightgrey>
+                <th colspan=2>Image</th>
+                <th colspan=2>Desired Size</th>
+                <th colspan=1>Cost Estimate (16mm)</th>
+                <th colspan=1>Export</th>
+            </thead>
+            <tbody style=background-color:lightblue>
+                <tr>
+                    <td colspan=2><input type=file id=image onchange=diceCalc.events.imageChange()></td>
+                    <td colspan=2>
+                        <button onclick=diceCalc.events.changeWidth(-1.6) style=height:50px;>- decrease</button>
+                        <button onclick=diceCalc.events.changeWidth(1.6) style=height:50px;>+ increase</button>
+                        <br/>
+                        <br/>
+                        <label>Width&nbsp </label><input type=number value=100 id=height disabled style=width:60px;> cm<br/>
+                        <label>Height </label><input id=width value=100 disabled style=width:60px;> cm
+                    </td>
+                    <td colspan=1><span id=diceTotal>0</span> Dice @ <br/><br/>
+                        $<input type=number id=diceCostPer value=0.10 style=width:60px;> per dice<br/><br/>
+                        = <span id=costTotal>$0.00</span>
+                    </td>
+                    <td>
+                        <input type=checkbox id=black><label for=black>invert(black dice)</label>
+                        <br/>
+                        <br/>
+                        <button onclick=diceCalc.events.print() style=width:100%;height:50px;>Open output</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <tr>
+                <th>
+                    <label for=contrast>Contrast</label>
+                </th>
+                <td>
+                    <button onclick=diceCalc.events.adjustContrast(-5)>- Decrease</button><button onclick=diceCalc.events.adjustContrast(5)>+ Increase</button>
+                </td>
+                <td>
+                    <input disabled id=contrastValue value=0 style=width:60px;>
+                </td>
+            </tr>
+
+            <tr>
+                <th>
+                    <label for=contrast>Brightness</label>
+                </th>
+                <td>
+                    <button onclick=diceCalc.events.adjustBrightness(-2)>- Decrease</button><button onclick=diceCalc.events.adjustBrightness(1)>+ Increase</button>
+                </td>
+                <td>
+                    <input disabled id=brightnessValue value=0 style=width:60px;>
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <div id=previewOutput style="min-width:40px;min-height:40px;outline:1px solid black;"></div>
+
+        <strong>Created by Kevin Weichel, Thank you for enjoying my tools show any appreciation here, <a href="http://paypal.me/KWeichel" style="font-size:120%">Donate with Paypal</a></strong>
+
+        <div id=outputTableContent style=display:none;>
+            <table id=outputTable></table>
+        </div>
+    </body>
+</html>
+
+<script>
+    var attachedImage,
+        values,
+        sizedImage,
+        contrast = 0,
+        brightness = 0,
+        averagePixelValue;
+
+    var diceColors = ['#171717', '#2f2f2f', '#595959', '#838383', '#b6b6b6', '#e9e9e9'];
+
+    var imageHeight = 10,
+        imageWidth = 10,
+        diceHeight = 10,
+        diceWidth = 10;
+
+    var heightField = document.getElementById('height'),
+        diceField = document.getElementById('diceTotal'),
+        diceCostPerField = document.getElementById('diceCostPer'),
+        diceCostTotal = document.getElementById('costTotal'),
+        widthField = document.getElementById('width'),
+        contrastField = document.getElementById('contrastValue'),
+        brightnessField = document.getElementById('brightnessValue'),
+        imageField = document.getElementById('image'),
+        preview = document.getElementById('previewOutput'),
+        outputTable = document.getElementById('outputTable');
+
+    var diceCalc = {
+        init: {
+            
+        },
+        events: {
+            changeWidth: function(cm){
+                var updatedValue = Math.round((widthField.value*1 + cm) * 100) / 100;
+                if(updatedValue > 0){
+                    //todo chaning this to dice
+                    widthField.value = updatedValue;
+                    diceCalc.events.processImage();
+                }            
+            },
+            imageChange: function(){
+                var fr = new FileReader;
+    
+                fr.onload = function() {
+                    var img = new Image;
+                    attachedImage = img;
+                    
+                    img.onload = function() {
+                        console.log(img.width);
+                        imageHeight = img.height;
+                        imageWidth = img.width;
+                        contrast = 0;
+                        brightness = 0;
+                        contrastField.value=0;
+                        brightnessField.value=0;
+                        averagePixelValue = null;
+                        diceCalc.events.processImage();
+                        diceCalc.view.setOutputTableSize();
+                    };
+                    
+                    img.src = fr.result;
+                };
+                
+                fr.readAsDataURL(imageField.files[0]);
+            },
+            processImage: function(){
+                diceCalc.util.updateHeightField();
+                diceCalc.util.calculateDice();
+                diceCalc.view.showDiceRequired();
+                diceCalc.view.showDicePriceTotal();
+                diceCalc.util.resizeImage();
+
+                values = diceCalc.util.getPixelArray();
+                diceCalc.util.applyBrightness(values);
+                diceCalc.util.applyContrast(values);
+                diceCalc.util.crushToSixValues(values);
+                diceCalc.view.drawPreview(values);
+                
+            },
+            adjustContrast: function(v){
+                if(v<0 && contrast > 0 || v > 0 && contrast < 300){
+                    contrast+=v;
+                    contrastField.value = contrast;
+                    diceCalc.events.processImage();
+                }
+            },
+            adjustBrightness: function(v){
+                if(v<0 && brightness > -100 || v>0 && brightness < 100){
+                    brightness+=v;
+                    brightnessField.value = brightness;
+                    diceCalc.events.processImage();
+                }
+            },
+            print: function(){
+                diceCalc.view.generateOutputNumbers();
+                var w = window.open();
+                w.document.body.innerHTML = document.getElementById("outputTableContent").innerHTML;
+            }
+        },
+        view: {
+            setOutputTableSize: function(){
+                var width = (diceWidth > diceHeight ? 100 : diceWidth/diceHeight*100),
+                    height = (diceHeight > diceWidth ? 100 : diceHeight/diceWidth*100);
+                document.getElementById('outputTable').setAttribute('style', `width:${width}%;height:${height}%;`)
+            },
+            showDiceRequired: function(){
+                diceField.innerHTML = diceWidth * diceHeight;
+            },
+            showDicePriceTotal: function(){
+                diceCostTotal.innerHTML = '$'+ Math.round(diceCostPerField.value * diceWidth * diceHeight*100)/100;
+            },
+            drawPreview: function(values){
+                var canvas = document.createElement('canvas'),
+                    ctx = canvas.getContext('2d'),
+                    y = 0,
+                    size = Math.round(500 / (diceHeight > diceWidth ? diceWidth : diceHeight));
+                canvas.width=diceWidth*size;
+                canvas.height=diceHeight*size;
+                
+                for(var i = 0; i < values.length; i++){
+                    var x = i%diceWidth * size
+                    if(i!=0 && i%diceWidth==0)y+=size;
+                    diceCalc.view.drawSquare(canvas, ctx, diceColors[values[i]], x, y, size);
+                }
+                preview.innerHTML=''
+                preview.appendChild(canvas);
+            },
+            drawSquare: function(canvas, context, color, x, y, size){  
+                context.fillStyle = color;
+                context.fillRect(x,y, x+size, y+size)
+            },
+            generateOutputNumbers: function(){
+                var outputNumbers = "<tr>";
+                var invertOutput = document.getElementById('black').checked
+                for(var i = 0; i < values.length; i++){
+                    outputNumbers+="<td>"+(invertOutput ? (values[i]+1):(6-values[i]))+"</td>";
+                    if(i!=0 && (i+1)%diceWidth == 0){
+                        outputNumbers+="</tr>";
+                        if(i < values.length)outputNumbers+="<tr>";
+                    }
+                }
+                outputTable.innerHTML = outputNumbers;
+            }
+        
+
+        },
+        util: {
+            updateHeightField: function(){
+                var heightPercent = imageWidth / imageHeight;
+                heightField.value = widthField.value * heightPercent;
+            },
+            getDiceForWidth: function(){
+                return Math.ceil(widthField.value / 1.6);
+            },
+            getDiceForHeight: function(){
+                return Math.ceil(heightField.value / 1.6);
+            },
+            calculateDice: function(){
+                diceWidth = diceCalc.util.getDiceForHeight();
+                diceHeight = diceCalc.util.getDiceForWidth();
+            },
+            resizeImage: function(){
+                var canvas = document.createElement('canvas'),
+                    ctx = canvas.getContext('2d');
+                canvas.width=diceWidth;
+                canvas.height=diceHeight;
+                ctx.drawImage(attachedImage, 0, 0, diceWidth, diceHeight);
+                sizedImage = ctx.getImageData(0,0,canvas.width,canvas.height);;
+            },
+            getPixelArray: function(){
+                var data = sizedImage.data;
+                var values = [];
+                for(var i=0; i<data.length; i+=4) {
+                    var red = data[i],
+                        green = data[i+1],
+                        blue = data[i+2];
+
+                    values.push(red+green+blue);
+                }
+                return values;
+            },
+            applyContrast: function(values){
+                if(contrast == 0)return;
+
+                if(!averagePixelValue){
+                    averagePixelValue = diceCalc.util.getAveragePixelValue(values);
+                }
+                var max = 765,
+                    min = 0;
+
+                var contrastAdjust = contrast / 100 + 1;
+
+                for(var i = 0; i < values.length; i++){
+                    if(values[i]>averagePixelValue){
+                        values[i] = values[i] * contrastAdjust;
+                    }else{
+                        values[i] = values[i] * -contrastAdjust;
+                    }
+                    if(values[i] < 0){
+                        values[i]=0;
+                    }else if(values[i] > 765){
+                        values[i]=765;
+                    }
+                }
+            
+            },
+            applyBrightness: function(values){
+                if(brightness == 0)return;
+                
+                var brightnessAdjust = brightness *.01 + 1;
+                for(var i = 0; i < values.length; i++){
+                    values[i] = values[i]*brightnessAdjust;
+                    if(values[i] < 0){
+                        values[i]=0;
+                    }else if(values[i] > 765){
+                        values[i]=765;
+                    }
+                }
+            },
+            getAveragePixelValue: function(values){
+                var total = 0;
+                for(var i = 0; i < values; i++) total+=values[i];
+                return total / values.length;
+            },
+            crushToSixValues(values){
+                var crushRanges = [127, 254, 381, 509, 636, 766]
+                for(var i = 0; i < values.length;i++){
+                    for(var r = 0; r < crushRanges.length;r++){
+                        if(values[i] < crushRanges[r]){
+                            values[i] = r;
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+</script>
