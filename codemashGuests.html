@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <style>
+            body{
+                background:black;
+                color:white;
+            }
+            table, th, td {
+                border: 1px solid white;
+                border-collapse: collapse;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Image</th>
+                <th>Note</th>
+            <thead>
+            <tbody id='guestInfo'></tbody>
+        </table>
+    </body>
+</html>
+
+<script>
+    document.getElementById('guestInfo').innerHTML = (
+        [
+        ['Jim Shingler', 'Platform Architecture, DevOps', 'Cardinal', 'https://media.licdn.com/dms/image/C4D03AQGgSccOiiWFFg/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=0tE6NkMXXhnBQMhrKwZvps3OhOSxhgRGHTIBflxtog4', ''],
+        ['Rob Gillen', 'Sr. Research Professional, Vulnerability', 'Oak Ridge Ntl Lab', 'https://media.licdn.com/dms/image/C4E03AQF2tKD9L_vOQA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=Y7L8mtLQudJGlgrJS65P9YLofq2BWZzHShHY11gYKmg', 'Summit super computer in building, codemash committee'],
+        ['Jarred Olson', 'Lead DevOps Developer', 'Pillar', 'https://media.licdn.com/dms/image/C4E03AQFIMbAcqWZZ3A/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=9-7V6kQvBXLFE6b_3cNsf3UXUgvI0tYbb8VkTx5Wqlk', 'co-presenter, former client'],
+        ['Cory House', 'Software Architect, Author, Speaker', 'Pluralsight', 'https://media.licdn.com/dms/image/C5103AQG5Wi2hsfN-Ag/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=0OrIdQ3yZPeUInAfpPg2IKGtQ-1slKz7T8Mxizs8l2k', 'speaker & well known Pluralsight author'],
+        ['Randall Koutnik', 'Sr. UI Engineer', 'Netflix', 'https://media.licdn.com/dms/image/C5103AQGB2Dh1vad7jA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=KX_ZzKFQPngCDaL1IPEZuy-tk7Z--2JZjspmamfK71w', 'speaker & author of Building Reactive Websites with RxJS & netflix'],
+        ['Mike Geig', 'Head of Global Evangelism Content', 'Unity', 'https://media.licdn.com/dms/image/C5603AQG3i3XZf8rxfw/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=7PeX-jkWTdE9K3gM42yZVr9sh2OUvVIC3fxuilFmVjM', 'speaker & author of Unity books & Unity Evangelist'],
+        ['Jimmy Balmert', '', '', 'https://media.licdn.com/dms/image/C4D03AQFSV3MLiiJmlQ/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=V69NTUmD1S95TTU_-O-bD-iWTQaieacyG-hzAafPiek', 'Speaker & former Manifest'],
+        ['Ryan Ransford', 'Sr. Software Dev', 'Genscape', 'https://media.licdn.com/dms/image/C4E03AQFZMOFg3i2Y6A/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=VPjZggms7oIqx3LdrpWfA-fk52D8nvHJcK0IlvlBdA8', 'Jimmy Balmer\'s friend '],
+        ['Dave Lucas', '', 'NiSource', 'https://media.licdn.com/dms/image/C4D03AQFxuOZoB57pwA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=Aj-6M00Ri2S22PTNAzcClH3Gw2DGZhZMF_IFZTKJ9BM', 'Boot camp instructor, speaker'],
+        ['Dan Monroe', 'Full-Stack, EmberJS', '', 'https://media.licdn.com/dms/image/C4E03AQGxHR4Boj8hJw/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=HoneiXfYgNMgKp94eWfGC9k4Hh4v2-rWZ0nBLh73hSk', 'Client - Fuse '],
+        ['Guy Royse', 'Dev Evangelist', 'DataRobot', 'https://media.licdn.com/dms/image/C4E03AQEUx0DEbKQ21g/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=eH7h9ryMa9MnNTjDMVEjNkPonh31nqmSOLSrE7EI_Vs', 'speaker & Evangilist for DataRobot '],
+        ['Bill Sempf', 'App Security', 'Columbus State', 'https://media.licdn.com/dms/image/C4D03AQHjQefDEbfong/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=yROztCl9O1uXRwJwte9-S8nu7dqRDDk3E6GpaGqGxhg', 'speaker & Security Track Lead & author of many books '],
+        ['Nathan Zender', 'Lead App Developer', 'DelphicDB', 'https://media.licdn.com/dms/image/C4E03AQFziXqwpEXp1Q/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=IMN9wXN9r7yfLZ9LMNeQ6pI2qK2M15pVEvjUyTnKHSo', 'Friend & former speaker & Fuse'],
+        ['Jennifer Marsman', 'Principal Software Dev Engineer', 'Microsoft', 'https://media.licdn.com/dms/image/C4E03AQGQCLF2nUbX9Q/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=maXF4BjA73sYhh-8V8_68XvOYR8PQFI4s24fcgjDxcw', 'Speaker'],
+        ['Andrew Fitzgerald', 'Software Dev', 'Cardinal Health', 'https://media.licdn.com/dms/image/C5103AQEyPCUK7p90qQ/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=jWrsMuLAvQD1-dbGh0XjlybNLwji7gwNs-mp3kyC0Co', 'Cardinal, JPMorgan Chase, CrossChx'],
+        ['Mercedes Wyss', 'Dev Champion, CTO(Full Stack)', 'Oracle, Produactivity(Guatemala)', 'https://media.licdn.com/dms/image/C5603AQHkWfnmby2a7g/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=sTp8faqvjGAn7faMxB9yCaVDqJP283WLkjYOkiGb-Hc', 'omSpeaker & Oracle Developer Champion '],
+        ['Jennifer Wadella', 'JS dev', 'Bitovi (legal tech startup)', 'https://media.licdn.com/dms/image/C4E03AQHd4p5GmaA6eg/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=VJHdxKliQNkibJpKr9tgj_f7-jGtX5vjzchi4ilb1dY', 'Speaker, Kansas Women in Tech'],
+        ['Sarah Withee', 'Polyglot', 'Arcadio.io', 'https://media.licdn.com/dms/image/C5603AQELkJzgnJXPyQ/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=ot9Tfjk1y7r062uywM0qSa4zVWLzY-VdVs_HQ53cpLA', 'Potential speaker and teaches kids about robotics'],
+        ['Georgia Weidman', 'Founder CTO', 'Shevirah', 'https://media.licdn.com/dms/image/C5603AQFshgB_IC_VcQ/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=pbCGxLbbRVyeV8Gcb9-nDDCOpMG5MCZFL1ZIhOoORmE', 'speaker & author of Penetration Testing, simulates attacks'],
+        ['Chris Woodruff', 'Dev Advocate', 'Jetbrains', 'https://media.licdn.com/dms/image/C4E03AQE_1quS-OxQPA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=HQcVhH1dgxkFeswAsi4CUyzoeMIZF104MiKOZLFNzXM', 'speaker & JetBrains Advocate'],
+        ['Stephen Shary', 'Lead Engineer', 'ACV Auctions', 'https://media.licdn.com/dms/image/C4E03AQGBP6t8a-XYgA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=Ou2iT9eSEilP1nkbl07u7F_j8VgZnDMcSdLM4m95h4s', 'speaker & kroger '],
+        ['David Neal', 'Senior Dev', 'Okta, Inc.', 'https://media.licdn.com/dms/image/C4D03AQE6gHCBIboa_A/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=Llc7_3BNGHdbLqIMG7XSVysjBp2348BILpzxLIUENw4', 'speaker & okta advocate & great illustrator, punch bears'],
+        ['Jim Manico', 'Owner, Security', 'Manicode Security', 'https://media.licdn.com/dms/image/C4E03AQHGpha7Z0QHuA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=qpFDybHtkQUTlh4ai3Ctd1NjSIPeQo8-26l0dc77bDA', 'speaker & author of iron-clad java & Java Champion'],
+        ['Michael Dowden','software architect','FlexePark','https://media.licdn.com/dms/image/C5603AQErQonrvDWjrg/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=WUnz0NuQRKCE-AAnPTmIm7YPpp_xATg7s6OupDE5SeI','speaker, co-founder, parking in businesses after hours'],
+        ['Martine Dowden','UX/UI Dev','FlexePark','https://media.licdn.com/dms/image/C5603AQG9Dv5wun5jQA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=y9c6L9wZOSKtYWC3Yq7XxGV7B1hXaWCKCQy2WiIkuG0','track lead, co founder'],
+        ['Brian MacDonald ','Senior Acquisitions Editor','Pragmatic Bookshelf','https://media.licdn.com/dms/image/C4D03AQFcF_WZUKDAmw/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=2Am-TblU6j49rvUEZcwVLMLhXG9_44oFRo_TmHV9ejM','Acquisitions Editor at Pragmatic Bookshelf & author of multipe books'],
+        ['Chad Green','Dev Manager, Strategist, Solutions Architect','ProgressiveHealth','https://media.licdn.com/dms/image/C4D03AQH1wgTsByttdg/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=bd3peXrrK5BlmaRSEo39MV5eAsYNF2lkiiIslmjQvOg','speaker & runs Code PaLOUsa '],
+        ['Matt Tremains','Software Engineer','IGS','https://media.licdn.com/dms/image/C4E03AQG1LkgsuEtcIA/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=11b4j5lkEXfEugZJPUkAD-bHWP9zonKS1Q_-ioTNMLk','IGS'],
+        ['Anwar Russell','Senior Engineer','CAS','https://media.licdn.com/dms/image/C4E03AQFoGkVa7kwV9A/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=3tpsUfHlyodnm6Q4O8Xc91JdQhf09RvTUSUvyVVqBzQ','CAS, previously Chase, Accenture']
+        ].map(function(info){
+            return `<tr>
+                    <td>${info[0]}</td>
+                    <td>${info[1]}</td>
+                    <td>${info[2]}</td>
+                    <td><img src='${info[3]}' style='width:150px;'></td>
+                    <td>${info[4]}</td>
+                    </tr>`
+        }).join('')
+    )
+</script>
