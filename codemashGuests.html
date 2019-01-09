@@ -13,13 +13,13 @@
     </head>
     <body>
         <table>
-            <thead>
+            <!--<thead>
                 <th>Name</th>
                 <th>Title</th>
                 <th>Location</th>
                 <th>Image</th>
                 <th>Note</th>
-            <thead>
+            <thead>-->
             <tbody id='guestInfo'></tbody>
         </table>
     </body>
@@ -59,11 +59,11 @@
         ['Anwar Russell','Senior Engineer','CAS','https://media.licdn.com/dms/image/C4E03AQFoGkVa7kwV9A/profile-displayphoto-shrink_800_800/0?e=1552521600&v=beta&t=3tpsUfHlyodnm6Q4O8Xc91JdQhf09RvTUSUvyVVqBzQ','CAS, previously Chase, Accenture']
         ].map(function(info){
             return `<tr>
-                    <td>${info[0]}</td>
-                    <td>${info[1]}</td>
-                    <td>${info[2]}</td>
+                    <td><strong>${info[0]}</strong><br/><br/>${info[2]}<br/><br/>${info[1]}</td>
                     <td><img src='${info[3]}' style='width:150px;'></td>
-                    <td>${info[4]}</td>
+                    </tr>
+                    <tr>
+                    <td colspan=2 style='background:#3d3d3d;'>${info[4]}<br/><br/></td>
                     </tr>`
         }).join('')
     )
