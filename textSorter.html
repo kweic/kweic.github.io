@@ -1,0 +1,22 @@
+<html>
+  <body style="background:black;color:lightblue;">
+    Paste in unsorted text, pasted text will be auto sorted and copied
+    <br/>
+    <textarea id='sortables' cols='150' rows='80' onkeyup='sorter.sort()' onblur='sorter.sort()' style="background:#383838;color:#fff"></textarea>
+    <br/>
+    <small>by Kevin Weichel</small>
+  </body>
+</html>
+
+<script>
+  sorter = {
+    sort() {
+      let sortarea = document.getElementById('sortables');
+      let sorted = sortarea.value.split('\n').filter(function (e) { return e }).sort().join('\n') + '\n';
+      sortarea.value = sorted;
+
+      sortarea.select();
+      document.execCommand('copy');
+    }
+  }
+</script>
