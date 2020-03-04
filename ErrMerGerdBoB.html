@@ -1,0 +1,23 @@
+<html>
+<body>
+    <textarea id="errMerCernversern" cols=70 rows=10 placeholder="type"></textarea>
+    <br/>
+    <textarea id="outpert" cols=70 rows=10 style="background-color:lightgray"></textarea>
+</body>
+</html>
+
+<script>
+    document.getElementById('errMerCernversern').onkeyup = function(){
+        document.getElementById('outpert').value = bob.caps(document.getElementById('errMerCernversern').value.replace(/e|a|i|ou|u/g, "er"))
+    }
+
+    var bob = {
+        caps: function(input){
+            var res = "";
+            for (i=0; i < input.length; i++) {
+                res += i % 2 == 0 ? input.charAt(i).toUpperCase() : input.charAt(i).toLowerCase();
+            }
+            return res;
+        }
+    }
+</script>
