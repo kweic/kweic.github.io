@@ -1,0 +1,71 @@
+<html>
+<body>
+
+<textarea id='total' cols='150' rows='50'>1</textarea>
+<br/>
+<button onclick="Doubler.double()">double it</button> <span id='doubled'>0</span>
+<br/>
+<button onclick="Doubler.doubleXTimes()">Double</button> x <input id='doubleXTimes' placeholder="0"> times
+
+</body>
+</html>
+
+<script>
+    var totalArea = document.getElementById('total');
+    var doubleCount = document.getElementById('doubled');
+    var xTimesInput = document.getElementById('doubleXTimes');
+
+    var Doubler = {
+        double: function(){
+            var total = totalArea.innerHTML.split('');
+            doubleCount.innerHTML = doubleCount.innerHTML*1+1;
+            totalArea.innerHTML = Calc.add(total, total);
+        },
+        doubleXTimes: function(){
+            var times = xTimesInput.value*1
+
+            for(var i = 0; i < times;i++){
+                Doubler.double();
+            }
+        }
+
+    }
+
+    var Calc = {
+        add: function(arr1, arr2){
+            //[1,2,3] + [1,2,3] == [2,4,6]
+            //[5,0] + [5,0] == [1,0,0]
+            var newTotal = []
+            Calc.equalizeLengths(arr1,arr2)
+            Calc.equalizeLengths(arr1, newTotal)
+
+            var carryOver = 0;
+
+            for(var i = arr1.length-1; i >= 0; i--){
+                var added = (arr1[i]*1) + (arr2[i]*1) + carryOver
+
+                if(added>=10){
+                    newTotal[i] = added-10
+                    carryOver = (added-newTotal[i])/10
+                }else{
+                    newTotal[i] = added;
+                    carryOver = 0;
+                }
+            }
+
+            while(carryOver > 0){
+                newTotal.unshift(carryOver);
+                if(newTotal[0]>=10){
+                    newTotal[0] -= 10;
+                }
+                carryOver-=10;
+            }
+
+            return newTotal.join('');
+        },
+        equalizeLengths: function(arr1, arr2){
+            while(arr1.length < arr2.length)arr1.unshift(0)
+            while(arr2.length < arr1.length)arr2.unshift(0)
+        }
+    }
+</script>
