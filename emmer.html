@@ -1,14 +1,14 @@
-  
-<html>
+  <html>
 <body>
-    <textarea id="start" cols=70 rows=10 placeholder="type"></textarea>
+    <h4>Converts Text == MMMMMMMM MMMM</h4>
+    <textarea id="start" cols=70 rows=10 placeholder="type" onchange="updateValue()" onkeyup="updateValue()"></textarea>
     <br/>
     <textarea id="end" cols=70 rows=10 style="background-color:lightgray"></textarea>
 </body>
 </html>
 
 <script>
-    document.getElementById('start').onkeyup = function(){
-        document.getElementById('end').value = emmer.convert(document.getElementById('start').value.replace(/[^ ]/g, "M"))
-    }
+  function updateValue() {
+    document.getElementById('end').value = document.getElementById('start').value.replace(/[^ ]/g, 'M')
+  }
 </script>
