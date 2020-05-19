@@ -9,6 +9,6 @@
 
 <script>
     document.getElementById('start').onkeyup = function(){
-        document.getElementById('end').value = emmer.convert(document.getElementById('start').value.replace([^ ], "M"))
+        document.getElementById('end').value = emmer.convert(document.getElementById('start').value.replace(/[^ ]/g, "M"))
     }
 </script>
