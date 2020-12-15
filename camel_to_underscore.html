@@ -1,0 +1,19 @@
+<html>
+<body>
+    <h4>convertsCamelText == converts_camel_text</h4>
+    <textarea id="start" cols=70 rows=10 placeholder="type" onchange="updateValue()" onkeyup="updateValue()"></textarea>
+    <br/>
+    <textarea id="end" cols=70 rows=10 style="background-color:lightgray"></textarea>
+</body>
+</html>
+
+<script>
+  function updateValue() {
+    document.getElementById('end').value = camelToUnderscore(document.getElementById('start').value)
+  }
+  
+  function camelToUnderscore(key) {
+    var result = key.replace( /([A-Z])/g, " $1" );
+    return result.split(' ').join('_').toLowerCase();
+  }
+</script>
