@@ -1,0 +1,31 @@
+<html>
+<body>
+    <h4>Root: Enzyme to Jest common conversions</h4>
+    <textarea id="start" cols=130 rows=10 placeholder="type or paste" onchange="updateValue()" onkeyup="updateValue()"></textarea>
+    <br/>
+    <textarea id="end" cols=130 rows=70 style="background-color:lightgray"></textarea>
+</body>
+</html>
+
+<script>
+  var replacements = [
+    [/spy\(\)/, 'jest.fn()'],
+    [/\.to\.have\.been\.called;/, '.toHaveBeenCalled();'],
+    [/\.length\).to.eq\(/, ').toHaveLength('],
+    [/\.to\.eq\(/, '.toBe('],
+    [/\.to\.eql/, '.toEqual'],
+    [/wrapper/, 'mountFns'],
+    [/.called/, '.toHaveBeenCalled()'],
+    [/pollForCondition/, 'waitFor'],
+    [/\.props\(\)/, ''],
+    [/\/global\/test\/support\/enzyme-mount/, '/test-support/mount'],
+    [/\.to\.include/, '.toContain'],
+  ]
+  function updateValue() {
+    var updatedValue = document.getElementById('start').value;
+    replacements.forEach((r) => {
+       updatedValue = updatedValue.replace(new RegExp(r[0], 'g'), r[1]);
+    })
+    document.getElementById('end').value = updatedValue;
+  }
+</script>
