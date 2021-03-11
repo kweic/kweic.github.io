@@ -1,0 +1,51 @@
+<html>
+<body>
+    <h4>Check Text Diff</h4>
+    <textarea id="text1" cols=90 rows=10 placeholder="type" onchange="showDiff()" onkeyup="showDiff()"></textarea>
+    <br/>
+    <textarea id="text2" cols=90 rows=10 placeholder="type" onchange="showDiff()" onkeyup="showDiff()"></textarea>
+    <br/>
+    <br/>
+    <div id="diff-title"><b>Diff</b></div>
+    <textarea id="output" cols=90 rows=6 style="background-color:lightgray"></textarea>
+    <br/>
+    <br/>
+    <b>Lengths</b> <span id="lengthIndicator"></span>
+    <div id="lengths"></div>
+</body>
+</html>
+
+<script>
+    function showDiff() {
+        var text1 = document.getElementById('text1').value;
+        var text2 = document.getElementById('text2').value;
+
+        document.getElementById('diff-title').style.color = text1 !== text2 ? "red" : "green";
+
+        document.getElementById('output').value = findDiff(text1, text2);
+        document.getElementById('lengths').innerHTML = "First:   " + text1.length + "<br/> Second: " + text2.length;
+
+        var differentLength = text1.length !== text2.length;
+        document.getElementById('lengthIndicator').innerHTML = differentLength ? "Different" : "Same";
+        document.getElementById('lengthIndicator').style.color = differentLength ? "red " : "green";
+    }
+  
+    function findDiff(value1, value2){
+        var str1, str2;
+        
+        if (value1.length > value2.length) {
+            str1 = value2;
+            str2 = value1;
+        } else {
+            str1 = value1;
+            str2 = value2;
+        }
+
+        let diff= "";
+        str2.split('').forEach(function(val, i){
+            if (val != str1.charAt(i))
+            diff += val ;         
+        });
+        return diff;
+    }
+</script>
