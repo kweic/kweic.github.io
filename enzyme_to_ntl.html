@@ -20,6 +20,8 @@
     [/\.props\(\)/, ''],
     [/\/global\/test\/support\/enzyme-mount/, '/test-support/mount'],
     [/\.to\.include/, '.toContain'],
+    [/\.toHaveBeenCalled\(\)\)\.toBe\(true\)/, ').toHaveBeenCalled()'],
+    [/\.toHaveBeenCalled\(\)\)\.toBe\(false\)/, ').not.toHaveBeenCalled()'],
   ]
   function updateValue() {
     var updatedValue = document.getElementById('start').value;
