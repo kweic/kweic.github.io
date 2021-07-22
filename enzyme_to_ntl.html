@@ -7,8 +7,13 @@
 </body>
 </html>
 
+
 <script>
-  var replacements = [
+    // to add
+// .text()).not.toContain(  with ).queryByText( *text* ).toBeNull()
+    // expect(wrapper.text()).toContain( with ).g
+
+var replacements = [
     [/spy\(\)/, 'jest.fn()'],
     [/\.to\.have\.been\.called;/, '.toHaveBeenCalled();'],
     [/\.length\).to.eq\(/, ').toHaveLength('],
