@@ -27,6 +27,7 @@ var replacements = [
     [/\.to\.include/, '.toContain'],
     [/\.toHaveBeenCalled\(\)\)\.toBe\(true\)/, ').toHaveBeenCalled()'],
     [/\.toHaveBeenCalled\(\)\)\.toBe\(false\)/, ').not.toHaveBeenCalled()'],
+    [/mountFns\.instance\(\)\.strings/, 'strings']
   ]
   function updateValue() {
     var updatedValue = document.getElementById('start').value;
