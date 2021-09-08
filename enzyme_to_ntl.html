@@ -27,7 +27,10 @@ var replacements = [
     [/\.to\.include/, '.toContain'],
     [/\.toHaveBeenCalled\(\)\)\.toBe\(true\)/, ').toHaveBeenCalled()'],
     [/\.toHaveBeenCalled\(\)\)\.toBe\(false\)/, ').not.toHaveBeenCalled()'],
-    [/mountFns\.instance\(\)\.strings/, 'strings']
+    [/mountFns\.instance\(\)\.strings/, 'strings'],
+    [/findByLabel/, 'getByLabelText'],
+    [/\.onChangeText/, '.changeText'],
+    [/const mountFns =/, 'const {} =']
   ]
   function updateValue() {
     var updatedValue = document.getElementById('start').value;
