@@ -30,7 +30,8 @@ var replacements = [
     [/mountFns\.instance\(\)\.strings/, 'strings'],
     [/findByLabel/, 'getByLabelText'],
     [/\.onChangeText/, '.changeText'],
-    [/const mountFns =/, 'const {} =']
+    [/const mountFns =/, 'const {} ='],
+    [/\.disabled\)\.toBe\(true\);/, '.toBeDisabled();']
   ]
   function updateValue() {
     var updatedValue = document.getElementById('start').value;
