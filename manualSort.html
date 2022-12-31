@@ -39,6 +39,7 @@
                 text-align: center;
                 padding: 12px;
                 width: 850px;
+                color: white;
             }
             .versus-text {
                 font-size: 20px;
@@ -84,7 +85,7 @@
     <div class="header">
         <button class="startSortingBtn" onclick="script.startSort()">Start / Reset</button>
         <div>
-            <div class="sort-section">
+            <div class="sort-section" id="sort-section">
                 <div class="choose-winner-text" id="choose-winner-text">Choose the winner</div>
                 <div id="buttons-container">
                     <button class="sort-choice-btn" id="option-1" onclick="script.processComparisonWinner(this.value)">Option 1</button>
@@ -191,7 +192,7 @@
         },
         declareWinner() {
             alert('finished');
-            document.getElementById('buttons-container').innerHTML = '';
+            document.getElementById('sort-section').innerHTML = 'Sorting finished, reload page to reset.';
         },
         // selectionSortExample() { // 30 = 464
         //     var comparisons = 0;
