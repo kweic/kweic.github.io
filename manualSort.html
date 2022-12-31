@@ -1,0 +1,233 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: darkgray;
+            }
+            .input-section {
+                margin-right: 12px;
+            }
+            #sortables {
+                width: 500px;
+                height: 800px;
+            }
+            .startSortingBtn {
+                padding-right: 24px;
+                padding-left: 24px;
+                margin-right: 12px;
+                background-color: rgb(10, 104, 49);
+                color: white;
+                font-weight: 700;
+                border-radius: 6px;
+            }
+            .progress-header {
+                display: flex;
+                flex-direction: row;
+                align-items: baseline;
+            }
+            .output {
+                background-color: lightsteelblue;
+                outline: 1px solid;
+                width: 500px;
+                height: 800px;
+            }
+            .progress-percent {
+                color: rgb(255, 226, 59);
+            }
+            .sort-section {
+                background-color: rgb(54, 54, 54);
+                text-align: center;
+                padding: 12px;
+                width: 850px;
+            }
+            .versus-text {
+                font-size: 20px;
+                font-weight: 700;
+                margin-left: 24px;
+                margin-right: 24px;
+                color: white;
+            }
+            .sort-choice-btn {
+                background-color: white;
+                border-radius: 3px;
+                width: 300px;
+                height: 60px;
+                font-weight: 600;
+            }
+            .choose-winner-text {
+                font-weight: 700;
+                font-size: 24px;
+                color: goldenrod;
+                padding-bottom: 12px;
+            }
+            .header {
+                display: flex;
+                flex-direction: row;
+                width: 1024px;
+            }
+            .break {
+                width: 1016px;
+                border-bottom: 2px solid black;
+                margin-top: 12px;
+            }
+            .main {
+                display: flex;
+                flex-direction: row;
+            }
+        </style>
+    </head>
+<body>
+    <div>
+        <h2>Paste a list for manual sorting</h2>
+    </div>
+
+    <div class="header">
+        <button class="startSortingBtn" onclick="script.startSort()">Start / Reset</button>
+        <div>
+            <div class="sort-section">
+                <div class="choose-winner-text" id="choose-winner-text">Choose the winner</div>
+                <div id="buttons-container">
+                    <button class="sort-choice-btn" id="option-1" onclick="script.processComparisonWinner(this.value)">Option 1</button>
+                    <span class="versus-text"> vs </span>
+                    <button class="sort-choice-btn" id="option-2" onclick="script.processComparisonWinner(this.value)">Option 2</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="break"></div>
+
+    <div class="main">
+        <div class="input-section">
+            <h3>Input</h3>
+            <textarea type="text" id="sortables" placeholder="paste or type here"></textarea>
+        </div>
+
+        <div class="output-section">
+            <div class="progress-header"><h3>Sorted Output</h3></div>
+            <textarea class="output" id="sortedOutput" placeholder="output"></textarea>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    let values;
+    let i = 0;
+    let j = 0;
+    let comparisonsMade = {};
+
+    script = {
+        startSort() {
+            let initialValues = document.getElementById('sortables').value.split('\n');
+            values = initialValues.map(element => {
+                return element.trim();
+            });
+            values = values.filter(e => e);
+            i = 0;
+            j = 0;
+            script.updateButtons();
+        },
+        updateOutput () {
+            const copyValues = [...values];
+            document.getElementById('sortedOutput').value = copyValues.reverse().join('\n');
+        },
+        updateButtons() {
+            // todo, randomize if i is 1 or 2
+            let overrides = 0;
+            while (comparisonsMade[script.savedComparisonsKey()]) {
+                overrides += 1;
+                script.processComparisonWinner(comparisonsMade[script.savedComparisonsKey()]);
+                if (overrides === values.length) break;
+            }
+
+            const tempComparisons = [values[j], values[j+1]].sort();
+            if (!document.getElementById('option-1')) return;
+
+            document.getElementById('option-1').innerHTML = values[j];
+            document.getElementById('option-1').value = values[j];
+
+            document.getElementById('option-2').innerHTML = values[j+1];
+            document.getElementById('option-2').value = values[j+1];
+        },
+        savedComparisonsKey() {
+            return [values[j], values[j+1]].sort().join(' .vs. ');
+        },
+        processComparisonWinner(winner) {
+            if (!values) return;
+            comparisonsMade[script.savedComparisonsKey()] = winner;
+            if (winner === values[j]) {
+                // note, swapped and reversing list for easy hack to sort top priorities over lowest 1st
+                let temp = values[j];
+                values[j] = values[j + 1];
+                values[j+1] = temp;
+            }
+
+            j += 1;
+
+            if (j === values.length - i - 1) {
+                i += 1;
+                j = 0;
+            }
+
+            if (i < values.length && j < values.length - 1) {
+                script.updateButtons();
+                script.updateOutput();
+            } else {
+                script.declareWinner();
+            }
+        },
+        processFastForwardWinner(winner) {
+            // TODO: make this win jump forward half
+            if (winner === values[j]) {
+                // note, swapped and reversing list for easy hack to short top priorities over lowest 1st
+                let temp = values[j];
+                values[j] = values[j + 1];
+                values[j+1] = temp;
+            }
+
+            // TODO: jump the other winner forward half of remaining space
+            // todo, if remaining space is small pass to default processComparisonWinner
+        },
+        declareWinner() {
+            alert('finished');
+            document.getElementById('buttons-container').innerHTML = '';
+        },
+        // selectionSortExample() { // 30 = 464
+        //     var comparisons = 0;
+        //     var next;
+        //     for (var i = 0; i < values.length - 1; i += 1){ // start at the beginning
+        //         next = values.length - 1;
+        //         // var swapped = false;
+        //         for (var x = i; x < values.length; x += 1){ // find the highest value
+        //             if (values[x] < values[next]){ // by comparing each value to 
+        //                 console.log("found ", values[x], " > ", values[next]);
+        //                 next = x;
+        //                 // swapped = true;
+        //             }
+        //             comparisons += 1;
+        //         }
+        //         // if no new lowest is found put the current 'i' at the end
+        //         console.log("swapping ", values[i], "and", values[next]);
+        //         let temp = values[i];
+        //         values[i] = values[next];
+        //         values[next] = temp;
+        //         console.log("values now: ", values);
+        //     }
+        //     console.log("total comparisons: ", comparisons);
+        // },
+        // bubbleSortExample() {
+        //     var comparisons = 0;
+        //     for (var i = 0; i < values.length - 1; i += 1) {
+        //         if (values[i] > values[i+1]) {
+        //             let temp = values[i];
+        //             values[i] = values[i + 1];
+        //             values[i+1] = temp;
+        //             i = i - 1;
+        //         }
+        //         comparisons += 1;
+        //     }
+        //     console.log("bubble comparisons: ", comparisons);
+        // }
+    }
+</script>
