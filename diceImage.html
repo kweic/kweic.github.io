@@ -1,89 +1,222 @@
+<!DOCTYPE html>
 <html>
     <head>
         <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f0f0f0;
+            }
+
+            h3 {
+                text-align: center;
+                margin-top: 20px;
+            }
+
             table {
-               border-collapse: collapse;
-               /* width:100%; */
+                border-collapse: collapse;
+                margin: 20px auto;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
-            table, th, td {
-                border: 1px solid black;
+
+            th, td {
+                padding: 10px;
+                border: 1px solid #ccc;
             }
-            #contrastLevel, #brightnessLevel{
-                display:block;background-color:black;height:10px;width:10%;
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            td {
+                text-align: center;
+            }
+
+            input[type="file"] {
+                display: none;
+            }
+
+            label[for="image"] {
+                cursor: pointer;
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+            }
+
+            button {
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+            input[type="number"] {
+                padding: 5px;
+                width: 50px;
+                text-align: center;
+            }
+
+            .withImage {
+                background: none;
+                border-color: red;
+            }
+
+            .withoutImage {
+                background: repeating-conic-gradient(#cccccc 0% 25%, transparent 0% 50%) 50% / 20px 20px;
+            }
+
+            #previewOutput {
+                min-width: 100px;
+                min-height: 100px;
+                outline: 1px solid #ccc;
+                margin: 20px auto;
+            }
+
+            strong {
+                display: block;
+                text-align: center;
+                margin-top: 20px;
+                font-size: 18px;
+            }
+
+            a {
+                color: #007bff;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            #outputTableContent {
+                text-align: center;
+                margin-top: 20px;
+                display: none;
+            }
+
+            #howToUse {
+                background-color: #fff;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 20px;
+                margin: 20px auto;
+                max-width: 600px;
+            }
+
+            #howToUse h4 {
+                font-size: 18px;
+            }
+
+            #howToUse ol {
+                list-style-type: decimal;
+                padding-left: 20px;
+            }
+
+            #howToUse ol li {
+                margin: 10px 0;
+                font-size: 16px;
             }
         </style>
     </head>
-    <body>
-        <h3>Dice mosaic generator (prepare your image to recreate it using only dice)</h3>
+<body>
+<h3>Dice mosaic generator (prepare your image to recreate it using only dice)</h3>
 
-        <table>
-            <thead style=background-color:lightgrey>
-                <th colspan=2>Image</th>
-                <th colspan=2>Desired Size</th>
-                <th colspan=1>Cost Estimate (16mm)</th>
-                <th colspan=1>Export</th>
-            </thead>
-            <tbody style=background-color:lightblue>
-                <tr>
-                    <td colspan=2><input type=file id=image onchange=diceCalc.events.imageChange()></td>
-                    <td colspan=2>
-                        <button onclick=diceCalc.events.changeWidth(-1.6) style=height:50px;>- decrease</button>
-                        <button onclick=diceCalc.events.changeWidth(1.6) style=height:50px;>+ increase</button>
-                        <br/>
-                        <br/>
-                        <label>Width&nbsp </label><input type=number value=100 id=height disabled style=width:60px;> cm<br/>
-                        <label>Height </label><input id=width value=100 disabled style=width:60px;> cm
-                    </td>
-                    <td colspan=1><span id=diceTotal>0</span> Dice @ <br/><br/>
-                        $<input type=number id=diceCostPer value=0.10 style=width:60px;> per dice<br/><br/>
-                        = <span id=costTotal>$0.00</span>
-                    </td>
-                    <td>
-                        <input type=checkbox id=black><label for=black>invert(black dice)</label>
-                        <br/>
-                        <br/>
-                        <button onclick=diceCalc.events.print() style=width:100%;height:50px;>Open output</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<table>
+    <thead>
+    <tr>
+        <th colspan="2">Image</th>
+        <th colspan="2">Desired Size</th>
+        <th colspan="1">Cost Estimate (16mm)</th>
+        <th colspan="1">Export</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="2">
+            <label for="image">Upload Image</label>
+            <input type="file" id="image" onchange="diceCalc.events.imageChange()">
+        </td>
+        <td colspan="2">
+            <button onclick="diceCalc.events.changeWidth(-1.6)">- Decrease</button>
+            <button onclick="diceCalc.events.changeWidth(1.6)">+ Increase</button>
+            <br><br>
+            <label>Width&nbsp; </label><input type="number" value="100" id="height" disabled>
+            cm<br>
+            <label>Height </label><input type="number" id="width" value="100" disabled>
+            cm
+        </td>
+        <td colspan="1">
+            <span id="diceTotal">0</span> Dice @ <br><br>
+            $&nbsp<input type="number" id="diceCostPer" value="0.10">
+            <br><br>
+            = <span id="costTotal">$0.00</span>
+        </td>
+        <td>
+            <input type="checkbox" id="black"><label for="black">Invert (black dice)</label>
+            <br><br>
+            <button onclick="diceCalc.events.print()">Open output</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
 
-        <table>
-            <tr>
-                <th>
-                    <label for=contrast>Contrast</label>
-                </th>
-                <td>
-                    <button onclick=diceCalc.events.adjustContrast(-5)>- Decrease</button><button onclick=diceCalc.events.adjustContrast(5)>+ Increase</button>
-                </td>
-                <td>
-                    <input disabled id=contrastValue value=0 style=width:60px;>
-                </td>
-            </tr>
+<table>
+    <tr>
+        <th>
+            <label for="contrast">Contrast</label>
+        </th>
+        <td>
+            <button onclick="diceCalc.events.adjustContrast(-5)">- Decrease</button>
+            <button onclick="diceCalc.events.adjustContrast(5)">+ Increase</button>
+        </td>
+        <td>
+            <input type="number" disabled id="contrastValue" value="0">
+        </td>
+    </tr>
 
-            <tr>
-                <th>
-                    <label for=contrast>Brightness</label>
-                </th>
-                <td>
-                    <button onclick=diceCalc.events.adjustBrightness(-2)>- Decrease</button><button onclick=diceCalc.events.adjustBrightness(1)>+ Increase</button>
-                </td>
-                <td>
-                    <input disabled id=brightnessValue value=0 style=width:60px;>
-                </td>
-            </tr>
-        </table>
+    <tr>
+        <th>
+            <label for="brightness">Brightness</label>
+        </th>
+        <td>
+            <button onclick="diceCalc.events.adjustBrightness(-2)">- Decrease</button>
+            <button onclick="diceCalc.events.adjustBrightness(1)">+ Increase</button>
+        </td>
+        <td>
+            <input type="number" disabled id="brightnessValue" value="0">
+        </td>
+    </tr>
+</table>
 
-        <br/>
+<br>
 
-        <div id=previewOutput style="min-width:40px;min-height:40px;outline:1px solid black;"></div>
+<div id="previewOutput" class="withoutImage"></div>
 
-        <strong>Created by Kevin Weichel, Thank you for enjoying my tools show any appreciation here, <a href="http://paypal.me/KWeichel" style="font-size:120%">Donate with Paypal</a></strong>
+<div id="howToUse">
+    <h4>How to Use</h4>
+    <ol>
+        <li>Upload your image</li>
+        <li>Adjust size, contrast, and brightness</li>
+        <li>Open output for a printable list of dice numbers</li>
+    </ol>
+</div>
 
-        <div id=outputTableContent style=display:none;>
-            <table id=outputTable></table>
-        </div>
-    </body>
+<strong>Created by Kevin Weichel, Thank you for enjoying my tools. Show your appreciation <a href="http://paypal.me/KWeichel">Donate with Paypal</a></strong>
+
+<div id="outputTableContent" style="display:none;">
+    <table id="outputTable"></table>
+</div>
+</body>
 </html>
 
 <script>
@@ -143,6 +276,7 @@
                         averagePixelValue = null;
                         diceCalc.events.processImage();
                         diceCalc.view.setOutputTableSize();
+                        diceCalc.view.clearPreviewBackground();
                     };
                     
                     img.src = fr.result;
@@ -227,9 +361,11 @@
                     }
                 }
                 outputTable.innerHTML = outputNumbers;
-            }
-        
-
+            },
+            clearPreviewBackground: function() {
+                var previewOutput = document.getElementById('previewOutput');
+                previewOutput.className = 'withImage';
+            },
         },
         util: {
             updateHeightField: function(){
