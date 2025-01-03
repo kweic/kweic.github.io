@@ -185,7 +185,7 @@
               <input type="checkbox" id="checkbox-${name}" style="height: 20px; width: 20px;" name="checkbox-${name}" ${project.checked ? 'checked' : ''}>
               <label for="checkbox-${name}" title="${project.summary}" class="${project.error ? 'error-label' : ''}">${name}</label>
               ${project.requiredBy.length ? `<span class="error-detail"> - Requires: ${project.requiredBy.join(', ')}</span>` : ''}
-              <a href="#" class="details-link" data-name="${name}" style="margin-left: 10px;font-size:14px;">details</a>
+              ${project.summary || project.repo_url ? `<a href="#" class="details-link" data-name="${name}" style="margin-left: 10px;font-size:14px;">details</a>` : ''}
             </div>
           `)
           .join('');
