@@ -108,8 +108,8 @@
         <div id="dataDate" style="height:14px;"></div>
         <hr />
         <div id="upload-action">
-          <form action="proj_checks.php" method="post" style="background-color: 527d5a;" enctype="multipart/form-data">
-            <input type="file" style="background-color: 527d5a;" name="fileToUpload" id="fileToUpload" accept=".json">
+          <form action="proj_checks.php" method="post" style="background-color: #527d5a;" enctype="multipart/form-data">
+            <input type="file" style="background-color: #527d5a;" name="fileToUpload" id="fileToUpload" accept=".json">
           </form>
         </div>
       </div>
@@ -117,8 +117,8 @@
  
     <table>
       <tr>
-        <th>Projects</th>
-        <th>Run Steps <button id="uncheckAll" style="background-color: 527d5a;position: absolute; right: 12;bottom:6;color:white;" onclick="uncheckAll()">RESET</button></th>
+        <th>Projects <button id="uncheckAll" style="background-color: #8fd99d;position: absolute; right: 12;bottom:6;color:#527d5a;" onclick="uncheckAllProjects()">RESET</button></th>
+        <th>Run Steps <button id="uncheckAll" style="background-color: #527d5a;position: absolute; right: 12;bottom:6;color:white;" onclick="uncheckAll()">RESET</button></th>
       </tr>
       <tr>
         <td id="projects">
@@ -161,6 +161,14 @@
         const data = getProjectData();
         Object.values(data).forEach(project => {
           project.steps.forEach(step => step.checked = false);
+        });
+        runUpdates(data);
+      }
+
+      function uncheckAllProjects() {
+        const data = getProjectData();
+        Object.values(data).forEach(project => {
+          project.checked = false;
         });
         runUpdates(data);
       }
