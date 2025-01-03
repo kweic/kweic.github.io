@@ -375,7 +375,7 @@
           section.classList.add('checklist-section');
           section.innerHTML = `
             <h3>
-              ${name} - <a href="${project.local_url}" target="_blank" style="font-size: 0.85em;font-weight:normal;">${project.local_url}</a>
+              ${name}${project.local_url ? ` - <a href="${project.local_url}" target="_blank" style="font-size: 0.85em;font-weight:normal;">${project.local_url}</a>` : ''}
             </h3>
             <ul style="list-style: none; padding: 0;">
               ${project.steps.map((step, index) => `
