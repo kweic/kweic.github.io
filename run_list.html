@@ -1,0 +1,510 @@
+<html>
+  <head>
+    <style>
+      html {
+        font-family: Arial, sans-serif;
+      }
+
+      .error-label {
+        color: red;
+        font-weight: bold;
+      }
+
+      .error-detail {
+        font-style: italic;
+        color: red;
+      }
+
+      #header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: #8fd99d;
+        padding: 12px;
+        border: 6px solid #527d5a;
+        border-radius: 6px;
+      }
+
+      .header-actions {
+        margin-left: auto;
+        justify-content: flex-end;
+      }
+
+      button {
+        height: 30px;
+      }
+
+      #upload-action {
+        border-width: 1px;
+      }
+
+      #main {
+        display: flex;
+        flex-direction: row;
+      }
+
+      #projects {
+        padding: 12px;
+        width: 30%;
+        background-color: #e8eaeb; /* Optional: Add a light background for clarity */
+      }
+
+      td, th {
+        border: 1px solid black;
+        border-radius: 6px;
+        padding: 12px;
+        vertical-align: top;
+      }
+
+      th {
+        background-color: #8fd99d;
+        color: #527d5a;
+        text-align: left;
+        position: relative;
+      }
+
+      table {
+        padding: 12px;
+        width: 100%;
+      }
+
+      #checklist {
+        width: 70%;
+        height: 100%;
+        overflow-y: auto; /* Allow scrolling if content overflows */
+        background-color: #e8eaeb; /* Optional: Add a light background for clarity */
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #CDD6DD;
+      }
+
+      a:link {
+        color: #527d5a;
+        text-decoration: none;
+      }
+
+      a:visited {
+        color: #527d5a;
+      }
+
+      a:hover {
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+
+
+    <div id="header">
+      <div style="margin-left:12px;color: #527d5a;">
+        <h1>Run List</h1>
+      </div>
+
+      <div class="header-actions">
+        <a href="#" style="font-size:14px;position:absolute;right:36;" onclick="howToUse()">how to use</a>
+        <div id="dataDate"></div>
+        <hr />
+        <div id="upload-action">
+          <form action="proj_checks.php" method="post" style="background-color: 527d5a;" enctype="multipart/form-data">
+            <input type="file" style="background-color: 527d5a;" name="fileToUpload" id="fileToUpload" accept=".json">
+          </form>
+        </div>
+      </div>
+    </div>
+ 
+    <table>
+      <tr>
+        <th>Projects</th>
+        <th>Run Steps <button id="uncheckAll" style="background-color: 527d5a;position: absolute; right: 12;bottom:6;color:white;" onclick="uncheckAll()">RESET</button></th>
+      </tr>
+      <tr>
+        <td id="projects">
+
+        </td>
+        <td id="checklist">
+        </td>
+      </tr>
+    </table>
+
+
+    <script>
+      document.getElementById('fileToUpload').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            var contents = e.target.result;
+            var jsonData = JSON.parse(contents);
+            localStorage.setItem('dataDate', new Date().toLocaleDateString());
+            saveProjectData(jsonData);
+            setLoadedDataDate();
+            runUpdates(jsonData);
+          } catch (error) {
+            alert("Error parsing JSON:", error);
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      function saveProjectData(data) {
+        localStorage.setItem('projectsData', JSON.stringify(data));
+      }
+
+      function getProjectData() {
+        return JSON.parse(localStorage.getItem('projectsData'));
+      }
+
+      function uncheckAll() {
+        const data = getProjectData();
+        Object.values(data).forEach(project => {
+          project.steps.forEach(step => step.checked = false);
+        });
+        runUpdates(data);
+      }
+
+      const loadedData = getProjectData();
+      // console.log("loaded data", loadedData);
+      if (loadedData) {
+        // populateProjects(loadedData);
+        runUpdates(loadedData);
+        setLoadedDataDate();
+      }
+
+      function setLoadedDataDate() {
+        document.getElementById('dataDate').innerText = `Data from: ${localStorage.getItem('dataDate')}`;
+      }
+
+      function populateProjects(data) {
+        const projectsDiv = document.getElementById('projects');
+        projectsDiv.innerHTML = Object.entries(data)
+          .map(([name, project]) => `
+            <div style="border: 1px solid gray; margin: 3px; padding: 5px;">
+              <input type="checkbox" id="checkbox-${name}" style="height: 20px; width: 20px;" name="checkbox-${name}" ${project.checked ? 'checked' : ''}>
+              <label for="checkbox-${name}" title="${project.summary}" class="${project.error ? 'error-label' : ''}">${name}</label>
+              ${project.requiredBy.length ? `<span class="error-detail"> - Requires: ${project.requiredBy.join(', ')}</span>` : ''}
+              <a href="#" class="details-link" data-name="${name}" style="margin-left: 10px;font-size:14px;">details</a>
+            </div>
+          `)
+          .join('');
+
+        // Add event listeners to checkboxes
+        projectsDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', function () {
+            const projectName = checkbox.id.replace('checkbox-', '');
+            data[projectName].checked = checkbox.checked;
+            runUpdates(data, projectName);
+          });
+        });
+
+        // Add event listeners to "Details" links
+        projectsDiv.querySelectorAll('.details-link').forEach(link => {
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const projectName = link.dataset.name;
+            const project = data[projectName];
+            showSummaryPopup(projectName, project.repo_url, project.summary);
+          });
+        });
+      }
+
+      // Function to show the popup
+      function showSummaryPopup(name, repoUrl, summary) {
+        closePopup();
+        const popup = document.createElement('div');
+        popup.id = 'popup';
+        popup.style.position = 'fixed';
+        popup.style.borderRadius = '6px';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.padding = '60px';
+        popup.style.backgroundColor = '#fff';
+        popup.style.boxShadow = '0 0 10px rgba(99, 67, 66, 0.5)';
+        popup.style.zIndex = '1000';
+
+        popup.innerHTML = `
+          <h2>${name}</h2>
+          ${repoUrl ? `<p><strong>Repo:</strong> <a href="${repoUrl}" target="_blank">${repoUrl}</a></p>` : ''}
+          <p>${summary}</p>
+          <button style="width:100%;height:50px;margin-top:60px;background-color: 527d5a;color:white;border-radius:4px;" id="close-popup">CLOSE</button>
+        `;
+
+        document.body.appendChild(popup);
+
+        // Add event listener to close button
+        document.getElementById('close-popup').addEventListener('click', closePopup);
+      }
+
+      function closePopup() {
+        const popup = document.getElementById('popup');
+        if (popup) {
+          document.body.removeChild(popup);
+        }
+      }
+
+      function howToUse() {
+        closePopup();
+        const popup = document.createElement('div');
+        popup.id = 'popup';
+        popup.style.position = 'fixed';
+        popup.style.borderRadius = '6px';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.padding = '30px';
+        popup.style.backgroundColor = '#fff';
+        popup.style.boxShadow = '0 0 10px rgba(99, 67, 66, 0.5)';
+        popup.style.zIndex = '1000';
+        popup.style.width = '80%';
+
+        popup.innerHTML = `
+          <h2>How to use</h2>
+          <p>This tool helps track steps for starting a project that has multiple dependent projects.</p>
+          <div style="margin-left:16px;">
+            <p>1. Select a JSON file using 'Choose File' (saved to localStorage)</p>
+            <p>2. Select the Project(s) you'd like to run</p>
+            <p>3. Check off steps, consult 'issues' if a step failed</p>
+          </div>
+          <h3>JSON format</h3>
+          <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap;">
+            <code>
+{
+  "Project B": {
+    "local_url": "http://localhost:8080",
+    "repo_url": "http://www.github.com",
+    "summary": "Summary of Project B",
+    "dependencies": ["Project A"],
+    "steps": [
+      {
+        "text": "Step 1",
+        "issues": [{
+          "title": "Possible Issue with step 1",
+          "details": "Details of possible issue with step 1",
+          "solution": "Solution possible issue with step 1",
+          "solution_url": "http://www.google.com"
+        }]
+      }
+    ]
+  }
+}
+            </code>
+          </pre>
+          <b>JSON Notes</b><br/>
+          - Add multiple Projects with details<br/>
+          - Dependencies as other project names in the object<br/>
+          - steps to start each project<br/>
+          - add issues (optional) for each step<br/>
+          - solution_url is optional
+          <button style="width:100%;height:50px;margin-top:60px;background-color: 527d5a;color:white;border-radius:4px;" id="close-popup">CLOSE</button>
+        `;
+
+        document.body.appendChild(popup);
+
+        // Add event listener to close button
+        document.getElementById('close-popup').addEventListener('click', closePopup);
+      }
+
+      function runUpdates(data, projectName) {
+        clearErrors(data);
+        if (projectName) { handleDependencies(projectName, data); }
+        checkAllForErrors(data);
+        renderChecklist(data);
+        populateProjects(data);
+        saveProjectData(data);
+      }
+
+      function clearErrors(data) {
+        Object.values(data).forEach(project => {
+          project.error = false;
+          project.requiredBy = [];
+        });
+      }
+
+      function checkAllForErrors(data) {
+        Object.entries(data).reverse().forEach(([name, project]) => {
+          if (project.checked || project.error) {
+            project.dependencies.forEach(depName => {
+              if (!data[depName].checked) {
+                data[depName].error = true;
+                data[depName].requiredBy.push(name);
+              }
+            });
+          }
+        })
+      }
+
+      function handleDependencies(projectName, data) {
+        const dependencies = data[projectName]?.dependencies || [];
+
+        if (data[projectName].checked) {
+          dependencies.forEach(depName => {
+            const dependency = data[depName];
+            dependency.checked = true;
+            dependency.error = false;
+            handleDependencies(depName, data);
+          });
+
+          data[projectName].error = false;
+        }
+      }
+
+      function markDependentsWithError(projectName, data) {
+        // go through projects, find any that depend on this project
+        // if they do, mark them as error
+        // then find dependents of those and mark them as errors
+        
+        Object.entries(data).forEach(([name, project]) => {
+          if (project.dependencies.includes(projectName) && project.checked) {
+            project.error = true;
+            markDependentsWithError(name, data);
+          }
+        });
+      }
+
+      function renderChecklist(data) {
+        const checklistDiv = document.getElementById('checklist');
+        checklistDiv.innerHTML = '';
+
+        Object.entries(data).forEach(([name, project]) => {
+          if (!project.checked) return;
+
+          const section = document.createElement('div');
+          section.classList.add('checklist-section');
+          section.innerHTML = `
+            <h3>
+              ${name} - <a href="${project.local_url}" target="_blank" style="font-size: 0.85em;font-weight:normal;">${project.local_url}</a>
+            </h3>
+            <ul style="list-style: none; padding: 0;">
+              ${project.steps.map((step, index) => `
+                <li style="border: 1px solid gray; margin: 3px; display: flex; align-items: center;">
+                  <input type="checkbox" id="step-${name}-${index}" style="height: 30px; width: 30px; margin-right: 12px;" name="step-${name}-${index}" ${step.checked ? 'checked' : ''}>
+                  <label for="step-${name}-${index}">${step.text}</label>
+                  <div style="margin-left: auto; padding-right: 12px; font-size: 12px;">
+                    ${step.issues && step.issues.length > 0 ? `(${step.issues.length}) <a href="#" class="errors-link" style="margin-left: 10px; font-size: 14px;" data-name="${name}" data-index="${index}">issues</a>` : ''}
+                  </div>
+                </li>
+              `).join('')}
+            </ul>
+          `;
+          checklistDiv.appendChild(section);
+
+          project.steps.forEach((step, index) => {
+            const stepCheckbox = document.getElementById(`step-${name}-${index}`);
+            if (stepCheckbox) {
+              stepCheckbox.addEventListener('change', function () {
+                step.checked = stepCheckbox.checked; // Save the checked state in the data
+                saveProjectData(data);
+              });
+            }
+
+            // Add event listener for the issues link
+            const issuesLink = document.querySelector(`.errors-link[data-name="${name}"][data-index="${index}"]`);
+            if (issuesLink) {
+              issuesLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                showIssuesPopup(step.issues); // Pass step.issues to the popup function
+              });
+            }
+          });
+        });
+      }
+
+      function showIssuesPopup(issues) {
+        closePopup();
+
+        const popup = document.createElement('div');
+        popup.id = 'popup';
+        popup.style.position = 'fixed';
+        popup.style.borderRadius = '6px';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.width = '80%';
+        // popup.style.maxWidth = '600px';
+        popup.style.height = '60%';
+        popup.style.backgroundColor = '#fff';
+        popup.style.boxShadow = '0 0 10px rgba(99, 67, 66, 0.5)';
+        popup.style.zIndex = '1000';
+        popup.style.overflowY = 'auto';
+        popup.style.padding = '20px';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+
+        // Create a search input
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search issues...';
+        searchInput.style.marginBottom = '20px';
+        searchInput.style.padding = '10px';
+        searchInput.style.width = '100%';
+        searchInput.style.boxSizing = 'border-box';
+
+        // Create a container for issue content
+        const contentContainer = document.createElement('div');
+        contentContainer.style.flexGrow = '1';
+        contentContainer.style.backgroundColor= '#e8eaeb';
+        contentContainer.style.overflowY = 'auto';
+
+        // Function to render issues
+        function renderIssues(filteredIssues) {
+          contentContainer.innerHTML = filteredIssues
+            .map(issue => `
+              <div>
+                <h4 style="margin-left:16px;margin-bottom:-4px;">${issue.title}</h4>
+                <table style="width: 100%;">
+                  <tr>
+                    <th style="text-align: left; width: 30%;">Details</th>
+                    <th style="text-align: left; width: 70%;">Solution ${issue.solution_url ? `<a href="${issue.solution_url}" style="font-weight:normal;" target="_blank">${issue.solution_url.length > 30 ? `${issue.solution_url.slice(0, 30)}...` : issue.solution_url}</a>` : ''}</th>
+                  </tr>
+                  <tr>
+                    <td>${issue.details}</td>
+                    <td>${issue.solution}</td>
+                  </tr>
+                </table>
+              </div>
+              <div style="width:100%;height:10px;background-color:white;"></div>
+            `)
+            .join('');
+          }
+
+          // Initial render of all issues
+          renderIssues(issues);
+
+          // Add search functionality
+          searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const filteredIssues = issues.filter(
+              issue =>
+                issue.title.toLowerCase().includes(query) || 
+                issue.details.toLowerCase().includes(query)
+            );
+            renderIssues(filteredIssues);
+          });
+
+          // Add close button
+          const closeButton = document.createElement('button');
+          closeButton.id = 'close-popup';
+          closeButton.style.width = '100%';
+          closeButton.style.height = '40px';
+          closeButton.style.marginTop = '20px';
+          closeButton.style.backgroundColor = '#527d5a';
+          closeButton.style.color = 'white';
+          closeButton.style.border = 'none';
+          closeButton.style.borderRadius = '4px';
+          closeButton.textContent = 'CLOSE';
+          closeButton.style.flexShrink = '0';
+          closeButton.addEventListener('click', closePopup);
+
+          // Assemble popup content
+          popup.appendChild(searchInput);
+          popup.appendChild(contentContainer);
+          popup.appendChild(closeButton);
+
+          document.body.appendChild(popup);
+        }
+    </script>
+  </body>
+</html>
